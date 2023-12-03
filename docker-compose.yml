@@ -1,0 +1,37 @@
+services:
+  client:
+    build: ./Client
+    container_name: client_c
+    ports:
+      - '5173:5173'
+    volumes:
+      - './client:/app'
+      - '/app/node_modules'
+    networks:
+      - mynetwork
+    depends_on:
+      - redis
+      - server
+    stdin_open: true
+    tty: true
+  server:
+    build: ./server
+    container_name: server_c
+    ports:
+      - '4000:4000'
+    volumes:
+      - './server:/app'
+    networks:
+      - mynetwork
+    depends_on:
+      - redis
+  redis:
+    container_name: redis-service
+    image: 'redis:latest'
+    restart: always
+    command: redis-server --save
+    networks:
+      - mynetwork
+networks:
+  mynetwork:
+    driver: bridge
